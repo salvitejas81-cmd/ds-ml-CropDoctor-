@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropDoctor | Plant Disease Detection</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #f4fff7, #e9f8ee);
+            color: #17251b;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            min-height: 78px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 7%;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        .logo {
+            font-size: 30px;
+            font-weight: 800;
+            color: #17251b;
+        }
+
+        .logo span {
+            color: #159447;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #56645a;
+            font-weight: 600;
+            padding: 12px 18px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: #e6f7eb;
+            color: #079447;
+        }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #657268;
+            font-size: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #20c766;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 4px #e1f8e9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 0;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .intro h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            color: #17251b;
+        }
+
+        .intro h1 span {
+            color: #159447;
+        }
+
+        .intro p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #617067;
+            max-width: 720px;
+            margin: auto;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 25px;
+            padding: 14px;
+            box-shadow: 0 15px 45px rgba(27, 88, 47, 0.12);
+        }
+
+        .upload-area {
+            border: 2px dashed #a9dcbc;
+            border-radius: 20px;
+            padding: 55px 25px;
+            text-align: center;
+            background: #fbfffc;
+        }
+
+        .camera {
+            width: 75px;
+            height: 75px;
+            border-radius: 20px;
+            background: #e5f8eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            margin: 0 auto 20px;
+        }
+
+        .upload-area h2 {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #6b786f;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 14px 28px;
+            background: #e5f7eb;
+            color: #078d43;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .file-label:hover {
+            background: #d4f1dd;
+        }
+
+        #image {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 18px;
+            color: #637067;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            margin-top: 14px;
+            border: none;
+            background: #159b48;
+            color: white;
+            padding: 19px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .analyze-btn:hover {
+            background: #10853e;
+            transform: translateY(-1px);
+        }
+
+        .analyze-btn:disabled {
+            background: #9bb9a5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-box {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 14px;
+            background: #fff0f0;
+            border: 1px solid #ffcaca;
+            color: #c62828;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .result-section {
+            margin-top: 35px;
+        }
+
+        .uploaded-image {
+            display: block;
+            width: 100%;
+            max-width: 420px;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 18px;
+            margin: 0 auto 30px;
+            border: 1px solid #e3eee6;
+            background: white;
+        }
+
+        .result-card {
+            margin-top: 20px;
+            background: white;
+            border-radius: 22px;
+            padding: 30px;
+            box-shadow: 0 12px 35px rgba(27, 88, 47, 0.10);
+        }
+
+        .result-card h2,
+        .result-title {
+            color: #159447;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .result-card h3 {
+            font-size: 22px;
+            color: #17251b;
+        }
+
+        .result-card p {
+            color: #526058;
+            line-height: 1.7;
+        }
+
+        .confidence-value {
+            font-size: 34px;
+            font-weight: 800;
+            color: #17251b;
+            margin-bottom: 15px;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 16px;
+            background: #e4eee8;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .confidence-fill {
+            width: 0%;
+            height: 100%;
+            background: #159b48;
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #718077;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 18px 5%;
+            }
+
+            .nav-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .intro h1 {
+                font-size: 32px;
+            }
+
+            .intro p {
+                font-size: 16px;
+            }
+
+            .container {
+                width: 94%;
+                padding: 40px 0;
+            }
+
+            .upload-area {
+                padding: 40px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            Crop<span>Doctor</span>
+        </div>
+
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="/" class="active">Detection</a>
+                <a href="/dashboard">Dashboard</a>
+            </div>
+
+            <div class="nav-status">
+                <span class="status-dot"></span>
+                AI System Online
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="intro">
+            <h1>Plant Disease <span>Detection</span></h1>
+            <p>
+                Upload a clear image of your plant leaf and let CropDoctor
+                analyze it using the trained deep-learning model.
+            </p>
+        </section>
+
+        <form action="/predict" method="POST" enctype="multipart/form-data" class="upload-card">
+            <div class="upload-area">
+                <div class="camera">IMG</div>
+
+                <h2>Upload Plant Image</h2>
+                <p>Select a clear image of the affected leaf</p>
+
+                <label for="image" class="file-label">Choose Image</label>
+
+                <input
+                    type="file"
+                    id="image"
+                    name="image"
+                    accept="image/png,image/jpeg,image/jpg"
+                    required
+                >
+
+                <div class="file-name" id="fileName">
+                    No image selected
+                </div>
+            </div>
+
+            <button type="submit" class="analyze-btn" id="analyzeButton">
+                Analyze Plant
+            </button>
+        </form>
+
+        {% if error %}
+            <div class="error-box">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% if prediction %}
+            <div class="result-section">
+                <img
+                    class="uploaded-image"
+                    src="{{ image_path }}"
+                    alt="Uploaded Plant Image"
+                >
+
+                <div class="result-card">
+                    <h2>Detected Disease</h2>
+                    <h3>
+                        {{ prediction.replace("___", " - ").replace("_", " ") }}
+                    </h3>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-title">
+                        Prediction Confidence
+                    </div>
+
+                    <div class="confidence-value">
+                        {{ confidence }}%
+                    </div>
+
+                    <div class="confidence-bar">
+                        <div
+                            class="confidence-fill"
+                            data-confidence="{{ confidence | default(0) }}"
+                        ></div>
+                    </div>
+
+                    <p>
+                        The model's confidence in this prediction.
+                    </p>
+                </div>
+
+                <div class="result-card">
+                    <h2>Symptoms</h2>
+                    <p>{{ symptoms }}</p>
+                </div>
+
+                <div class="result-card">
+                    <h2>Recommended Treatment</h2>
+                    <p>{{ treatment }}</p>
+                </div>
+
+                <div class="result-card">
+                    <h2>Prevention</h2>
+                    <p>{{ prevention }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+    <footer>
+        CropDoctor - AI-Based Plant Disease Detection System
+    </footer>
+
+    <script>
+        const imageInput = document.getElementById("image");
+        const fileName = document.getElementById("fileName");
+        const analyzeButton = document.getElementById("analyzeButton");
+        const confidenceFill = document.querySelector(".confidence-fill");
+
+        imageInput.addEventListener("change", function () {
+            if (this.files && this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = "No image selected";
+            }
+        });
+
+        document.querySelector("form").addEventListener("submit", function () {
+            if (imageInput.files.length === 0) {
+                return;
+            }
+
+            analyzeButton.disabled = true;
+            analyzeButton.textContent = "Analyzing Plant...";
+        });
+
+        if (confidenceFill) {
+            const confidence = confidenceFill.dataset.confidence || 0;
+            confidenceFill.style.width = confidence + "%";
+        }
+    </script>
+</body>
+</html>

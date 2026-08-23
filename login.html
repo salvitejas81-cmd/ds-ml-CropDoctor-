@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Doctor Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="login-page">
+    <div class="login-box">
+        <div class="login-logo">CD</div>
+
+        <h1>Crop Doctor</h1>
+        <p>Plant Disease Detection System</p>
+
+        <form method="post" class="login-form">
+            <label for="username">Username</label>
+            <input class="login-input" type="text" id="username" name="username" value="admin" required>
+
+            <label for="password">Password</label>
+            <input class="login-input" type="password" id="password" name="password" value="admin123" required>
+
+            <button class="login-btn" type="submit">Login</button>
+        </form>
+
+        <span class="login-note">Internship Project 2026</span>
+    </div>
+</div>
+
+</body>
+</html>

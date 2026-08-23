@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CropDoctor | Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='dashboard.css') }}">
+
+</head>
+
+
+<body>
+
+
+
+<header class="navbar">
+
+    <div class="logo">
+        🌱 Crop<span>Doctor</span>
+    </div>
+
+
+    <div class="nav-right">
+
+        <div class="nav-links">
+
+            <a href="/">
+                🔍 Disease Detection
+            </a>
+
+            <a href="/dashboard" class="active">
+                📊 Dashboard
+            </a>
+
+        </div>
+
+
+        <div class="nav-status">
+
+            <span class="status-dot"></span>
+
+            AI System Online
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<main class="dashboard-container">
+
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div>
+
+            <div class="badge">
+                📊 ANALYTICS DASHBOARD
+            </div>
+
+
+            <h1>
+                Plant Disease Statistics
+            </h1>
+
+
+            <p>
+                Overview of diseases and image distribution
+                in the CropDoctor dataset.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="stats-grid">
+
+
+        <!-- TOTAL IMAGES -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🖼️
+            </div>
+
+            <div>
+
+                <p>Total Images</p>
+
+                <h2>
+                    {{ total_images }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- DISEASE CLASSES -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🦠
+            </div>
+
+            <div>
+
+                <p>Disease Classes</p>
+
+                <h2>
+                    {{ total_diseases }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HEALTHY -->
+
+        <div class="stat-card healthy">
+
+            <div class="stat-icon">
+                🌿
+            </div>
+
+            <div>
+
+                <p>Healthy Images</p>
+
+                <h2>
+                    {{ healthy_images }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- DISEASED -->
+
+        <div class="stat-card disease">
+
+            <div class="stat-icon">
+                🔬
+            </div>
+
+            <div>
+
+                <p>Diseased Images</p>
+
+                <h2>
+                    {{ diseased_images }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- DISEASE STATISTICS -->
+
+    <div class="content-card">
+
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Disease-wise Statistics
+                </h2>
+
+                <p>
+                    Number of training images for each class
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="disease-list">
+
+
+            {% for disease, count in sorted_diseases %}
+
+            <div class="disease-row">
+
+
+                <div class="disease-name">
+
+                    <span class="leaf">
+                        🌿
+                    </span>
+
+                    <span>
+                        {{ disease.replace("___", " - ").replace("_", " ") }}
+                    </span>
+
+                </div>
+
+
+
+                <div class="bar-container">
+
+                    <div class="bar"></div>
+
+                </div>
+
+
+
+                <div class="count">
+
+                    {{ count }}
+
+                </div>
+
+
+            </div>
+
+            {% endfor %}
+
+
+        </div>
+
+    </div>
+
+
+
+    <div class="graphs-container">
+
+
+        <!-- GRAPH 1 -->
+
+        <div class="graph-card">
+
+            <h2>
+                📊 Disease-wise Image Distribution
+            </h2>
+
+
+            <img
+                src="{{ url_for('static', filename='graphs/disease_distribution.png') }}"
+                alt="Disease Distribution Graph"
+            >
+
+        </div>
+
+
+
+        <!-- GRAPH 2 -->
+
+        <div class="graph-card">
+
+            <h2>
+                🥧 Healthy vs Diseased
+            </h2>
+
+
+            <img
+                class="pie-chart-img"
+                src="{{ url_for('static', filename='graphs/healthy_diseased.png') }}"
+                alt="Healthy vs Diseased Graph"
+            >
+
+        </div>
+
+
+
+        <!-- GRAPH 3 -->
+
+        <div class="graph-card">
+
+            <h2>
+                📈 Top 10 Classes
+            </h2>
+
+
+            <img
+                src="{{ url_for('static', filename='graphs/top10_classes.png') }}"
+                alt="Top 10 Disease Classes Graph"
+            >
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- TOP DISEASE CLASSES -->
+
+    <div class="content-card">
+
+
+        <div class="card-header">
+
+            <div>
+
+                <h2>
+                    Top Disease Classes
+                </h2>
+
+                <p>
+                    Classes with the highest number of images
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="top-grid">
+
+
+            {% for disease, count in sorted_diseases[:6] %}
+
+            <div class="top-card">
+
+
+                <div class="rank">
+                    #{{ loop.index }}
+                </div>
+
+
+                <h3>
+                    {{ disease.replace("___", " - ").replace("_", " ") }}
+                </h3>
+
+
+                <strong>
+                    {{ count }}
+                </strong>
+
+
+                <span>
+                    training images
+                </span>
+
+
+            </div>
+
+            {% endfor %}
+
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+
+<footer>
+
+    🌱 CropDoctor • AI-Based Plant Disease Detection System
+
+</footer>
+
+
+</body>
+
+</html>
